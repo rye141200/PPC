@@ -2,6 +2,7 @@ const express = require('express');
 const morgan = require('morgan');
 const AppError = require('./utils/AppError');
 const globalErrorHandler = require('./controllers/errorController');
+const userRouter = require('./routes/userRoutes');
 
 const app = express();
 
@@ -14,12 +15,8 @@ app.use(express.json());
 app.use(express.static(`${__dirname}/public`));
 
 //?Routes
-app.use('/', (req, res) => {
-  res.status(200).json({
-    status: 'success',
-    message: 'Hello from the middleware!',
-  });
-});
+app.use('/user', userRouter);
+
 app.all('*', (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
 });
