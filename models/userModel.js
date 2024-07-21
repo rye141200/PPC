@@ -41,7 +41,6 @@ const userSchema = mongoose.Schema({
       address: String,
       description: String,
       floor: String,
-      link: String,
     },
   ],
   passwordResetToken: String,

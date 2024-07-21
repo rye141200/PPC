@@ -35,6 +35,9 @@ const createSendToken = (user, statusCode, req, res) => {
 };
 
 //!Main functionalities
+exports.renderLoginUI = (req,res,next)=>{
+  res.render('login'); 
+}
 exports.signup = catchAsync(async (req, res, next) => {
   const newUser = await User.create({
     name: req.body.name,
@@ -152,4 +155,26 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
       500,
     );
   }*/
+});
+
+exports.updatePassword = catchAsync(async (req, res, next) => {
+  //? 1) Get user from collection
+  const user = await User.findById(req.user.id).select('+password');
+
+  //? 2) Check if POSTed current password is correct
+  if (!(await user.correctPassword(req.body.passwordCurrent, user.password))) {
+    return next(new AppError('Your current password is wrong.', 401));
+  }
+
+  //? 3) Check if password and passwordConfirm are equal if so, update password
+  if (req.body.password !== req.body.passwordConfirm)
+    return next(new AppError('Passwords does not match!', 400));
+  
+  user.password = req.body.password;
+  user.passwordConfirm = req.body.passwordConfirm;
+  await user.save();
+  //! User.findByIdAndUpdate will NOT work as intended! Due to not running validators
+
+  //? 4) Log user in, send JWT
+  createSendToken(user, 200, req, res);
 });
