@@ -1,9 +1,11 @@
-//const crypto = require('crypto');
+const crypto = require('crypto');
 const { promisify } = require('util');
 const jwt = require('jsonwebtoken');
 const User = require('../models/userModel');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/AppError');
+const { sendEmail } = require('../utils/email');
+const replaceTemplate = require('../dev-data/passwordResetTemplate');
 
 //!Helper methods
 const signToken = (id) =>
@@ -33,11 +35,27 @@ const createSendToken = (user, statusCode, req, res) => {
     },
   });
 };
+exports.restrictTo =
+  (...roles) =>
+  (req, res, next) => {
+    // roles ['admin']. role='user'
+    if (!roles.includes(req.user.role)) {
+      return next(
+        new AppError('You do not have permission to perform this action', 403),
+      );
+    }
+
+    next();
+  };
 
 //!Main functionalities
-exports.renderLoginUI = (req,res,next)=>{
-  res.render('login'); 
-}
+exports.renderLoginUI = (req, res, next) => {
+  res.render('login');
+};
+exports.renderSignup = (req, res, next) => {
+  res.render('register');
+};
+
 exports.signup = catchAsync(async (req, res, next) => {
   const newUser = await User.create({
     name: req.body.name,
@@ -122,7 +140,32 @@ exports.protect = catchAsync(async (req, res, next) => {
   next();
 });
 
-//TODO
+exports.isLoggedIn = async (req, res, next) => {
+  if (req.cookies.jwt) {
+    try {
+      //* 1) verify token
+      const decoded = jwt.verify(req.cookies.jwt, process.env.JWT_SECRET);
+
+      //* 2) Check if user still exists
+      const currentUser = await User.findById(decoded.id);
+      if (!currentUser) {
+        return next();
+      }
+      //* 3) Check if user changed password after the token was issued
+      if (currentUser.changedPasswordAfter(decoded.iat)) {
+        return next();
+      }
+
+      // THERE IS A LOGGED IN USER
+      res.locals.user = currentUser;
+      return next();
+    } catch (err) {
+      return next();
+    }
+  }
+  next();
+};
+
 //!Password CRUD operations
 exports.forgotPassword = catchAsync(async (req, res, next) => {
   //*1) Get email
@@ -135,11 +178,13 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
   await user.save({ valdiationBeforeSave: false });
 
   //*3) Send it to user's email
-  /*try {
+  try {
     const resetURL = `${req.protocol}://${req.get(
       'host',
-    )}/api/v1/users/resetPassword/${resetToken}`;
-    await new Email(user, resetURL).sendPasswordReset();
+    )}/users/resetPassword/${resetToken}`;
+    const html = replaceTemplate(resetURL);
+
+    await sendEmail(user.email, 'Password reset (Expires in 10 mins)', html);
 
     res.status(200).json({
       status: 'success',
@@ -154,7 +199,32 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
       new AppError('There was an error sending the email. Try again later!'),
       500,
     );
-  }*/
+  }
+});
+
+exports.resetPassword = catchAsync(async (req, res, next) => {
+  //* 1) Get user based on the token
+  const hashedToken = crypto
+    .createHash('sha256')
+    .update(req.params.token)
+    .digest('hex');
+
+  const user = await User.findOne({
+    passwordResetToken: hashedToken,
+    passwordResetExpires: { $gt: Date.now() },
+  });
+
+  //* 2) If token has not expired, and there is user, set the new password
+  if (!user) return next(new AppError('Token is invalid or has expired', 400));
+
+  user.password = req.body.password;
+  user.passwordResetToken = undefined;
+  user.passwordResetExpires = undefined;
+  await user.save();
+
+  //* 3) Update changedPasswordAt property for the user
+  //* 4) Log the user in, send JWT
+  createSendToken(user, 200, req, res);
 });
 
 exports.updatePassword = catchAsync(async (req, res, next) => {
@@ -169,7 +239,7 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
   //? 3) Check if password and passwordConfirm are equal if so, update password
   if (req.body.password !== req.body.passwordConfirm)
     return next(new AppError('Passwords does not match!', 400));
-  
+
   user.password = req.body.password;
   user.passwordConfirm = req.body.passwordConfirm;
   await user.save();

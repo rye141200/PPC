@@ -4,14 +4,20 @@ const userController = require('../controllers/userController');
 
 const router = express.Router();
 
-router.post('/signup', authController.signup);
+router
+  .route('/signup')
+  .post(authController.signup)
+  .get(authController.renderSignup);
+
 router
   .route('/login')
   .post(authController.login)
   .get(authController.renderLoginUI);
+
 router.get('/logout', authController.logout);
 
 router.post('/forgotPassword', authController.forgotPassword);
+router.patch('/resetPassword/:token', authController.resetPassword);
 
 //! Protect all routes after this middleware
 router.use(authController.protect);

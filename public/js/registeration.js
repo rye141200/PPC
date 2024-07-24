@@ -5,7 +5,7 @@
 'use strict';
 
 // Helper methods
-
+console.log('Hello from the registeration');
 const isValidEmail = (email) => {
   const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const disallowedChars = /[\/;:'"\[\]{}\\+\-\(\)]/;
@@ -56,12 +56,20 @@ const showValidationIcon = function (field, isValid) {
 };
 
 // initializers
+const fullNameFieldEl = document.querySelector('#contact-name');
 const emailFieldEl = document.querySelector('#contact-email');
 const passwordFieldEl = document.querySelector('#contact-password');
+const passwordFieldEl2 = document.querySelector('#contact-password2');
 const submitBtnEl = document.querySelector('#submit-btn');
 const submitErrorEl = document.querySelector('#submit-error');
 
-// event handlers
+// event listeners
+// fullNameFieldEl.addEventListener('keyup', () =>
+//   showValidationIcon(fullNameFieldEl, function (user) {
+//     return true;
+//   }),
+// );
+
 emailFieldEl.addEventListener('keyup', () =>
   showValidationIcon(emailFieldEl, isValidEmail),
 );
@@ -70,7 +78,13 @@ passwordFieldEl.addEventListener('keyup', () =>
   showValidationIcon(passwordFieldEl, isValidPassword),
 );
 
-// Event listener for the submit button
+passwordFieldEl2.addEventListener('keyup', () =>
+  showValidationIcon(
+    passwordFieldEl2,
+    (password) => passwordFieldEl.value === password,
+  ),
+);
+
 submitBtnEl.addEventListener('click', async (event) => {
   event.preventDefault();
 
@@ -78,8 +92,13 @@ submitBtnEl.addEventListener('click', async (event) => {
   submitErrorEl.textContent = '';
 
   // Check if fields are empty
-  if (!emailFieldEl.value || !passwordFieldEl.value) {
-    submitErrorEl.textContent = 'Email and Password fields cannot be empty';
+  if (
+    !fullNameFieldEl.value ||
+    !emailFieldEl.value ||
+    !passwordFieldEl.value ||
+    !passwordFieldEl2.value
+  ) {
+    submitErrorEl.textContent = 'All fields are required';
     return;
   }
 
@@ -98,9 +117,16 @@ submitBtnEl.addEventListener('click', async (event) => {
     return;
   }
 
+  if (passwordFieldEl.value !== passwordFieldEl2.value) {
+    submitErrorEl.textContent = 'passwords do not match';
+    submitErrorEl.style.color = 'red';
+    return;
+  }
+
   // Send the request to the server with the email and password
   try {
-    const response = await sendRequestToServer('/user/login', {
+    const response = await sendRequestToServer('/user/signup', {
+      name: fullNameFieldEl.value,
       email: emailFieldEl.value,
       password: passwordFieldEl.value,
     });
@@ -109,7 +135,7 @@ submitBtnEl.addEventListener('click', async (event) => {
     // Check if the response is successful
     if (data.status !== 'success') {
       submitErrorEl.textContent =
-        'Login failed. Please check your email and password.';
+        'Sign up failed. Please check your email and password.';
       submitErrorEl.style.color = 'red';
       return;
     }
@@ -123,5 +149,3 @@ submitBtnEl.addEventListener('click', async (event) => {
     submitErrorEl.style.color = 'red';
   }
 });
-
-console.log('Hello world from the login.js!');
