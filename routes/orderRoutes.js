@@ -4,6 +4,8 @@ const orderController = require('../controllers/orderController');
 
 const router = express.Router();
 
+//router.use(authController.protect);
+
 router
   .route('/')
   .get(
@@ -12,17 +14,15 @@ router
     orderController.getAllOrders,
   )
   .post(
-    authController.protect,
-    authController.restrictTo('user'),
+    // authController.restrictTo('user', 'admin'),
+    // orderController.setUserId,
     orderController.createOrder,
   );
-
+router.use(authController.restrictTo('admin'));
 router
   .route('/:id')
-  .get(
-    authController.protect,
-    authController.restrictTo('user'),
-    orderController.getOrder,
-  );
+  .get(orderController.getOrder)
+  .patch(orderController.updateOrder)
+  .delete(orderController.deleteOrder);
 
 module.exports = router;

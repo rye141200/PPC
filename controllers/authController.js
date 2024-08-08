@@ -13,7 +13,7 @@ const signToken = (id) =>
     expiresIn: process.env.JWT_EXPIRES_IN,
   });
 
-const createSendToken = (user, statusCode, req, res) => {
+const createSendToken = (user, statusCode, req, res, signup = false) => {
   const token = signToken(user._id);
 
   res.cookie('jwt', token, {
@@ -26,14 +26,15 @@ const createSendToken = (user, statusCode, req, res) => {
 
   // Remove password from output
   user.password = undefined;
-
-  res.status(statusCode).json({
-    status: 'success',
-    token,
-    data: {
-      user,
-    },
-  });
+  //res.status(statusCode).redirect('/');
+  if (!signup)
+    res.status(statusCode).json({
+      status: 'success',
+      token,
+      data: {
+        user,
+      },
+    });
 };
 exports.restrictTo =
   (...roles) =>
@@ -61,12 +62,14 @@ exports.signup = catchAsync(async (req, res, next) => {
     name: req.body.name,
     email: req.body.email,
     password: req.body.password,
+    phone: req.body.phone,
   });
 
   //const url = `${req.protocol}://${req.get('host')}/me`;
   // console.log(url);
-
-  createSendToken(newUser, 201, req, res);
+  req.user = newUser;
+  createSendToken(newUser, 201, req, res, true);
+  next();
 });
 
 exports.login = catchAsync(async (req, res, next) => {
@@ -137,11 +140,12 @@ exports.protect = catchAsync(async (req, res, next) => {
   // GRANT ACCESS TO PROTECTED ROUTE
   req.user = currentUser;
   res.locals.user = currentUser;
+
   next();
 });
-
+//! RENDERING
 exports.isLoggedIn = async (req, res, next) => {
-  if (req.cookies.jwt) {
+  if (req.cookies?.jwt) {
     try {
       //* 1) verify token
       const decoded = jwt.verify(req.cookies.jwt, process.env.JWT_SECRET);
@@ -158,6 +162,7 @@ exports.isLoggedIn = async (req, res, next) => {
 
       // THERE IS A LOGGED IN USER
       res.locals.user = currentUser;
+      // res.user = currentUser;
       return next();
     } catch (err) {
       return next();
@@ -230,7 +235,7 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
 exports.updatePassword = catchAsync(async (req, res, next) => {
   //? 1) Get user from collection
   const user = await User.findById(req.user.id).select('+password');
-
+  // console.log(user);
   //? 2) Check if POSTed current password is correct
   if (!(await user.correctPassword(req.body.passwordCurrent, user.password))) {
     return next(new AppError('Your current password is wrong.', 401));
@@ -241,7 +246,7 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
     return next(new AppError('Passwords does not match!', 400));
 
   user.password = req.body.password;
-  user.passwordConfirm = req.body.passwordConfirm;
+  // user.passwordConfirm = req.body.passwordConfirm;
   await user.save();
   //! User.findByIdAndUpdate will NOT work as intended! Due to not running validators
 

@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%=title%></title>
+    <link href="/css/home.css" rel="stylesheet" />
+    <link
+      href="https://unpkg.com/flowbite@1.5.0/dist/flowbite.min.css"
+      rel="stylesheet"
+    />
+    <script defer src="/js/login.js" type="module"></script>
+    <script defer src="/js/profile.js" type="module"></script>
+  </head>
+  <body class="relative min-h-screen bg-[#f9fafb]">
+    <%- include('components/_header')%>
+    <!-- stepper -->
+    <section class="container mx-auto pl-6 md:pl-0 mt-6">
+      <nav class="flex" aria-label="Breadcrumb">
+        <ol
+          class="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse"
+        >
+          <li class="inline-flex items-center">
+            <a
+              href="#"
+              class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600"
+            >
+              <svg
+                class="w-3 h-3 me-2.5"
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  d="m19.707 9.293-2-2-7-7a1 1 0 0 0-1.414 0l-7 7-2 2a1 1 0 0 0 1.414 1.414L2 10.414V18a2 2 0 0 0 2 2h3a1 1 0 0 0 1-1v-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v4a1 1 0 0 0 1 1h3a2 2 0 0 0 2-2v-7.586l.293.293a1 1 0 0 0 1.414-1.414Z"
+                />
+              </svg>
+              Home
+            </a>
+          </li>
+          <li>
+            <div class="flex items-center">
+              <svg
+                class="rtl:rotate-180 w-3 h-3 text-gray-400 mx-1"
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 6 10"
+              >
+                <path
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="m1 9 4-4-4-4"
+                />
+              </svg>
+              <a
+                href="#"
+                class="ms-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ms-2"
+                >Profile</a
+              >
+            </div>
+          </li>
+        </ol>
+      </nav>
+    </section>
+
+    <section id="AccountSettings" class="relative container mx-auto my-10">
+      <div class="max-w-xl mx-auto bg-white shadow-2xl p-6 rounded-lg">
+        <h2 class="text-3xl font-bold text-[#242464] mb-6">Account settings</h2>
+        <form id="personal-details" class="space-y-4 mb-6">
+          <div class="flex flex-col">
+            <label class="block text-[6B6B73] mb-2 text-xl">Name</label>
+            <input
+              type="text"
+              placeholder="<%=user.name%>"
+              class="name text-gray-400 w-full p-3 border border-gray-300 rounded-md bg-gray-100 focus:outline-none focus:ring-2 focus:ring-[#242464]-500"
+            />
+          </div>
+          <div class="flex flex-col">
+            <label class="block text-[6B6B73] mb-2 text-xl">Email</label>
+            <input
+              type="email"
+              placeholder="<%=user.email%>"
+              class="email text-gray-400 w-full p-3 border border-gray-300 rounded-md bg-gray-100 focus:outline-none focus:ring-2 focus:ring-[#242464]-500"
+            />
+          </div>
+          <div class="flex flex-col">
+            <label class="block text-[6B6B73] mb-2 text-xl">Phone</label>
+            <input
+              type="phone"
+              placeholder="<%=user.phone%>"
+              class="phone text-gray-400 w-full p-3 border border-gray-300 rounded-md bg-gray-100 focus:outline-none focus:ring-2 focus:ring-[#242464]-500"
+            />
+          </div>
+        </form>
+        <div class="flex justify-end">
+          <button
+            id="submit-changes"
+            class="bg-[#242464] text-white py-3 px-6 rounded-md hover:bg-[#4D486C] focus:outline-none focus:ring-2 focus:ring-[#242464]-500"
+          >
+            Save settings
+          </button>
+        </div>
+
+        <!-- Password Settings -->
+        <h2 class="text-3xl pt-7 font-bold text-[#242464] mb-6">
+          Password settings
+        </h2>
+        <form id="new-password" class="space-y-4 mb-6">
+          <div class="flex flex-col">
+            <label class="block text-[6B6B73] mb-2 text-xl"
+              >Current password</label
+            >
+            <input
+              type="password"
+              placeholder="********"
+              class="currentPass text-gray-400 w-full p-3 border border-gray-300 rounded-md bg-gray-100 focus:outline-none focus:ring-2 focus:ring-[#242464]-500"
+            />
+          </div>
+          <div class="flex flex-col">
+            <label class="block text-[6B6B73] mb-2 text-xl">New password</label>
+            <input
+              type="password"
+              placeholder="********"
+              class="newPass text-gray-400 w-full p-3 border border-gray-300 rounded-md bg-gray-100 focus:outline-none focus:ring-2 focus:ring-[#242464]-500"
+            />
+          </div>
+          <div class="flex flex-col">
+            <label class="block text-[6B6B73] mb-2 text-xl"
+              >Confirm new password</label
+            >
+            <input
+              type="password"
+              placeholder="********"
+              class="confirmPass text-gray-400 w-full p-3 border border-gray-300 rounded-md bg-gray-100 focus:outline-none focus:ring-2 focus:ring-[#242464]-500"
+            />
+          </div>
+        </form>
+        <div class="flex justify-end">
+          <button
+            id="save-password"
+            class="bg-[#242464] text-white py-3 px-6 rounded-md hover:bg-[#4D486C] focus:outline-none focus:ring-2 focus:ring-[#242464]-500"
+          >
+            Save password
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <%- include('components/_footer')%>
+
+    <script
+      type="module"
+      src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"
+    ></script>
+    <script
+      nomodule
+      src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"
+    ></script>
+    <!-- Include Flowbite JS -->
+    <script src="https://unpkg.com/flowbite@latest/dist/flowbite.min.js"></script>
+  </body>
+</html>

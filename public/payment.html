@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <!-- Other Tags -->
+    <!-- Moyasar Styles -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.moyasar.com/mpf/1.14.0/moyasar.css"
+    />
+    <!-- Moyasar Scripts -->
+    <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?version=4.8.0&features=fetch"></script>
+    <script src="https://cdn.moyasar.com/mpf/1.14.0/moyasar.js"></script>
+  </head>
+  <body>
+    <div class="mysr-form"></div>
+    <script>
+      // Example script to initialize Moyasar payment form
+      Moyasar.init({
+        element: '.mysr-form',
+        amount: 10000, // Amount in the smallest currency unit
+        currency: 'SAR',
+        description: 'Order #1234',
+        publishable_api_key: 'pk_test_V2H52ztJRKs12miXdn3T7XTg6SrrjK7K9k7AeuA4',
+        callback_url:
+          'https://bacd-2001-16a2-ed3d-7f00-40d2-784a-223f-6d9c.ngrok-free.app/',
+        methods: ['creditcard'],
+        metadata: {
+          order: {
+            products: [
+              { product: '66a0406ab55a121c206002ed', count: 1 },
+              { product: '66a0407f41e46a5f04c73335', count: 1 },
+            ],
+            paymentMethod: 'credit card',
+            location: 'https://www.google.com/maps?q=21.593955,39.1530033',
+          },
+        },
+      });
+    </script>
+  </body>
+</html>

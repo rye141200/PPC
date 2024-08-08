@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const orderSchema = mongoose.Schema(
+const orderSchema = new mongoose.Schema(
   {
     user: {
       type: mongoose.Schema.ObjectId,
@@ -29,18 +29,29 @@ const orderSchema = mongoose.Schema(
       enum: ['pending', 'shipped', 'delivered', 'cancelled'],
       default: 'pending',
     },
-    createdAt: {
-      type: Date,
-      default: Date.now(),
+    location: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    paymentID: {
+      type: String,
+      requird: [true, 'Order must have Moyasar payment ID!'],
+      select: false,
+    },
+    paid: {
+      type: Boolean,
+      default: false,
     },
   },
   {
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
+    timestamps: true,
   },
 );
 //! To calculate the total price
-orderSchema.virtual('TotalPrice').get(function () {
+orderSchema.virtual('totalPrice').get(function () {
   const totalPrice = this.products.reduce(
     (total, el) =>
       total +
@@ -53,19 +64,25 @@ orderSchema.virtual('TotalPrice').get(function () {
 
 //! Query middlewares
 orderSchema.pre(/^find/, function (next) {
+  if (!this.getOptions().bypassFilter) this.find({ paid: { $ne: false } });
   this.populate({
     path: 'products.product',
-    select: 'price discount',
-  }).populate({ path: 'user', select: 'name email' });
+    select: 'name price discount category',
+  });
+  //.populate({ path: 'user', select: 'name email' });
   next();
 });
 
-//# update the product quantity
-/*orderSchema.pre(/^find/, async function (next) {
-  // convert query object into document object
-  this.product = await this.findOne();
+orderSchema.pre('save', async function (next) {
+  if (this.isModified('products')) {
+    await this.populate({
+      path: 'products.product',
+      select: 'name price discount category',
+    });
+  }
+  next();
 });
-*/
+
 const Order = mongoose.model('Order', orderSchema);
 
 module.exports = Order;

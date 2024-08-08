@@ -1,0 +1,29 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-cloudBurst: #242464;
+  --color-midGray: #6b6b73;
+  --color-mulledWine: #4d486c;
+  --color-lightMulledWine: #6e6b8e;
+}
+
+*::selection {
+  background-color: var(--color-lightMulledWine);
+  color: white; /* Example using Tailwind’s white color */
+}
+
+.btn-animated {
+  transition: all 0.2s ease-in;
+}
+
+.primary-btn {
+  color: white;
+  background-color: var(--color-mulledWine) !important;
+}
+
+.primary-btn:hover {
+  color: var(--color-mulledWine);
+  background-color: white !important;
+}

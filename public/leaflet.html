@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Leaflet Map with Marker Options</title>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css"
+    />
+    <!-- Font Awesome for Icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <style>
+      #map {
+        height: 100vh;
+        width: 100%;
+      }
+      .leaflet-bar a {
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+
+    <script src="https://unpkg.com/leaflet@1.8.0/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+    <script>
+      // Custom Google Maps-style icon
+      var googleMapsIcon = L.icon({
+        iconUrl:
+          'https://w7.pngwing.com/pngs/129/41/png-transparent-google-map-pin-thumbnail.png', // Replace with your icon URL or path
+        iconSize: [38, 38], // Adjust size as needed
+        iconAnchor: [19, 38], // Adjust anchor point
+        popupAnchor: [0, -38], // Point from which the popup should open relative to the iconAnchor
+      });
+
+      // Variable to hold the marker
+      var marker;
+      var useGoogleMapsIcon = false; // Set to true to use Google Maps-style icon, false for default Leaflet icon
+      // Function to recenter the map to the user's location
+      function recenterMap() {
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(
+            function (position) {
+              var lat = position.coords.latitude;
+              var lon = position.coords.longitude;
+
+              console.log({ lat, lon });
+              // Set the map view to the user's location
+              map.setView([lat, lon], 13);
+
+              // Determine the icon to use
+              var icon = useGoogleMapsIcon ? googleMapsIcon : null;
+
+              // Place a marker at the user's location
+              if (marker) {
+                marker.setLatLng([lat, lon]);
+              } else {
+                marker = L.marker([lat, lon], {
+                  draggable: true,
+                  ...(icon && { icon: icon }),
+                }).addTo(map);
+              }
+            },
+            function (error) {
+              console.error('Geolocation error: ' + error.message);
+            },
+            { enableHighAccuracy: true },
+          );
+        } else {
+          alert('Geolocation is not supported by this browser.');
+        }
+      }
+
+      // Initialize the map with a fallback location (0, 0)
+      var map = L.map('map').setView([0, 0], 2);
+
+      // Attempt to set the map view to the user's location on load
+      recenterMap();
+
+      // Add a tile layer
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors',
+      }).addTo(map);
+
+      // Add geocoding search bar to the map
+      var geocoder = L.Control.Geocoder.nominatim();
+      L.Control.geocoder({
+        geocoder: geocoder,
+        defaultMarkGeocode: false,
+      })
+        .on('markgeocode', function (e) {
+          var latlng = e.geocode.center;
+          map.setView(latlng, 13);
+
+          // Remove existing marker
+          if (marker) {
+            map.removeLayer(marker);
+          }
+
+          // Add new marker at the found location with selected icon
+          var icon = useGoogleMapsIcon ? googleMapsIcon : null;
+          marker = L.marker(latlng, {
+            draggable: true,
+            ...(icon && { icon: icon }),
+          }).addTo(map);
+        })
+        .addTo(map);
+
+      // Function to place or move the marker
+      function onMapClick(e) {
+        var icon = useGoogleMapsIcon ? googleMapsIcon : null;
+        if (marker) {
+          marker.setLatLng(e.latlng);
+        } else {
+          marker = L.marker(e.latlng, {
+            draggable: true,
+            ...(icon && { icon: icon }),
+          }).addTo(map);
+        }
+        console.log({ ...e.latlng });
+      }
+
+      // Add event listener for map clicks
+      map.on('click', onMapClick);
+
+      // Create a custom control for repositioning
+      var RepositionControl = L.Control.extend({
+        options: { position: 'topright' },
+        onAdd: function () {
+          var container = L.DomUtil.create(
+            'div',
+            'leaflet-bar leaflet-control leaflet-control-custom',
+          );
+          var icon = L.DomUtil.create('a', 'fas fa-crosshairs', container); // Using Font Awesome crosshairs icon
+          icon.title = 'Recenter map to your location';
+          icon.style.backgroundColor = 'white';
+          icon.style.width = '30px';
+          icon.style.height = '30px';
+          icon.style.lineHeight = '30px';
+          icon.style.textAlign = 'center';
+          icon.style.cursor = 'pointer';
+
+          // Add event listener to the icon
+          L.DomEvent.on(icon, 'click', recenterMap);
+
+          return container;
+        },
+      });
+
+      // Add the custom control to the map
+      map.addControl(new RepositionControl());
+    </script>
+  </body>
+</html>
