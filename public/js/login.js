@@ -5,6 +5,7 @@
 import { Alert } from '../utils/alerts.mjs';
 import { Validator } from '../utils/Validator.mjs';
 import { APIRequest } from '../utils/APIRequest.mjs';
+import { Cart } from '../utils/Cart.mjs';
 
 //****** (1) AUTHENTICATION ******
 //! Selectors
@@ -14,13 +15,17 @@ const formBoxesEl = document.querySelectorAll('.form');
 const logoutBtnEl = document.querySelector('#logout-btn');
 const signupSubmitBtnEl = document.querySelector('#signup-submit');
 const showPasswordSignupBtn = document.querySelector('#show-password-signup');
+const cartBtnEl = document.querySelector('#user-menu-button');
+const loginFormEl = document.querySelector('#login-form');
+const signupFormEl = document.querySelector('#signup-form');
+const loggedIn = !document
+  ?.querySelector('#user-menu-button')
+  .classList.contains('hidden');
 const delay = 3000;
 
-//! Listeners
+//! Helper methods
 
-Validator.validateField(formBoxesEl);
-
-loginSubmitBtnEl.addEventListener('click', async () => {
+const login = async () => {
   const loginEmailInput = document.querySelector('#email-login');
   const loginPasswordInput = document.querySelector('#password-login');
   //* 1) Checking if fields are empty or not
@@ -45,9 +50,8 @@ loginSubmitBtnEl.addEventListener('click', async () => {
     Alert.displaySuccess('Logged in successfully', delay);
     window.location.href = '/';
   } else Alert.displayFailure('Invalid email or password!', delay);
-});
-
-signupSubmitBtnEl.addEventListener('click', async () => {
+};
+const signup = async () => {
   const signupNameInput = document.querySelector('#signup-name');
   const signupEmailInput = document.querySelector('#signup-email');
   const signupPasswordInput = document.querySelector('#signup-password');
@@ -87,8 +91,25 @@ signupSubmitBtnEl.addEventListener('click', async () => {
   //* 7) Checking if successful or not and redirecting
   if (success) {
     Alert.displaySuccess('Signed up successfully..', delay);
+    if (Cart.loadCart().length !== 0) await transferCart();
     window.location.href = '/';
   } else Alert.displayFailure('Email already exists!', delay);
+};
+//! Listeners
+
+if (!loggedIn && Cart.loadCart().length === 0)
+  cartBtnEl.setAttribute('href', '');
+
+Validator.validateField(formBoxesEl);
+
+loginFormEl.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  login();
+});
+
+signupFormEl.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  signup();
 });
 
 showPasswordSignupBtn.addEventListener('click', () => {
@@ -113,6 +134,29 @@ logoutBtnEl.addEventListener('click', async () => {
   const success = await APIRequest.sendRequestToAPI('/user/logout', 'GET');
   if (success) {
     Alert.displaySuccess('Logging out..', delay);
+    Cart.clearCart();
     window.location.href = '/';
   } else Alert.displayFailure('Something went wrong try again..', delay);
+});
+//okay
+//
+//! First thing we want to make it invisible until something is added into the cart
+//! so if the count is always zero, we keep it invisible
+//! Second you need to use  subscriber pattern here
+//! To keep editing the count apublishers long as you edit the cart count, otherwise you would need
+//! to invoke this listener whenever the cart is handled in the Cart.mjs
+//! What approach would you like to use
+//! Make this a method to be always called when handling the cart to be simple
+//! No
+
+//! PEPE JULIAN ONZEMA
+//! THANK YOU FOR COMING IN, THANK YOU
+//! WHY ARE YOU GAEH??????
+//! WHO SAYS I AM GAY????
+//! YOU ARE GAEEEEEH!
+//! YOU ARE TRANSGENDAAAH
+//! YOU ARE REPRESENTATIVE FOR LGBTI: LESBIANS, GAYS, BISEXUALS, TRANSGENDAS BOBOBNAAAWAAA, INTERSEXUALS!
+//! WHERE IS DA ETCH (H)???
+document.addEventListener('DOMContentLoaded', function () {
+  Cart.handleCartCount();
 });

@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%= title%></title>
+    <link href="/css/home.css" rel="stylesheet" />
+    <link
+      href="https://unpkg.com/flowbite@1.5.0/dist/flowbite.min.css"
+      rel="stylesheet"
+    />
+    <script defer src="/js/login.js" type="module"></script>
+    <script defer src="/js/searchBar.js" type="module"></script>
+  </head>
+  <body class="relative min-h-screen bg-[#f9fafb]">
+    <%- include('components/_header')%> 
+    <!-- Order #66ab9a1795b35fb7dd2e9103 -->
+
+    
+    <section>
+      <div class="mx-auto max-w-screen-xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
+        <div class="mx-auto max-w-3xl">
+          <header class="text-center">
+            <h1 class="text-xl font-bold text-gray-900 sm:text-3xl">
+              <%=orders.orderName%> 
+            </h1>
+          </header>
+
+          <div class="mt-8">
+            <ul class="space-y-4" id="products-list">
+              
+              <% if (orders.products && orders.products.length) { %> <!-- Check if orders exist -->
+                <% orders.products.forEach(item => { %> <!-- Iterate over each order -->
+                  <li id="product--<%=item.product.name.split(' ').join('-')%>" class="flex items-center gap-4">
+                    <!-- Image and Product Details -->
+                    <img src="/img/<%=item.product.image%>" alt="<%=item.product.name%>" class="h-16 rounded object-cover"/>
+                    <div>
+                      <h3 class="text-base text-gray-900"><%= item.product.name %></h3> <!-- Increased to text-base -->
+                      <dl class="mt-0.5 space-y-px text-[10px] text-gray-700"> 
+                        <div class="hidden md:block">
+                          <dt class="inline font-bold">Description:</dt>
+                          <dd class="inline"><%= item.product.description %></dd>
+                        </div>
+                        <div>
+                          <dt class="inline font-bold">Category:</dt>
+                          <dd id="price--<%=item.product.category.name%>" class="inline"><%= item.product.category.name %></dd>
+                        </div>
+                        <div>
+                          <dt class="inline font-bold">Count:</dt>
+                          <dd id="price--<%=item.count%>" class="inline"><%= item.count %></dd>
+                        </div>
+                        <div>
+                          <dt class="inline font-bold">Total price:</dt>
+                          <dd id="price--<%=item.product.name.split(' ').join('-')%>" class="inline"><%= (item.product.price * item.count).toFixed(2) %> SAR</dd>
+                        </div>
+                      </dl>
+                    </div>
+                  </li>
+                <% }); %>
+              <% } %>
+              
+            </ul>
+            
+        </div>
+      </div>
+    </section>
+
+    <%- include('components/_footer')%>
+    <script
+      type="module"
+      src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"
+    ></script>
+    <script
+      nomodule
+      src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"
+    ></script>
+    <!-- Include Flowbite JS -->
+    <script src="https://unpkg.com/flowbite@latest/dist/flowbite.min.js"></script>
+  </body>
+</html>

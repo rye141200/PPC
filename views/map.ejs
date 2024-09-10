@@ -9,10 +9,28 @@
       href="https://unpkg.com/flowbite@1.5.0/dist/flowbite.min.css"
       rel="stylesheet"
     />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <style>
+      #map {
+        height: 500px; /* Adjust height as needed */
+      }
+    </style>
     <script
       defer
       src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"
     ></script>
+    <script defer src="/js/searchBar.js" type="module"></script>
     <script defer src="/js/login.js" type="module"></script>
     <script defer src="/js/map.js" type="module"></script>
   </head>
@@ -21,23 +39,100 @@
     <%- include('components/_header')%>
 
     <!-- Map -->
-    <section>
-      <div class="mx-auto max-w-screen-xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
-        <div class="mx-auto max-w-3xl">
-          <header class="text-center">
-            <h1 class="text-xl font-bold text-gray-900 sm:text-3xl">
-              Your Map
-            </h1>
-          </header>
+    <section class="container mx-auto">
+      <h1 class="text-xl font-bold text-gray-900 sm:text-3xl text-center my-8">
+        Set your location
+      </h1>
+      <div
+        class="flex flex-col px-4 lg:flex-row lg:px-0 justify-center items-center lg:gap-8"
+      >
+        <div
+          id="map"
+          class="w-full max-w-xl lg:mx-0 border border-gray-300 shadow-lg"
+        ></div>
+        <form action="#" class="mt-8 grid grid-cols-6 gap-6">
+          <div class="col-span-6">
+            <label
+              for="address"
+              class="block text-sm font-medium text-gray-700"
+            >
+              Address
+            </label>
 
-          <div class="mt-8"></div>
-        </div>
+            <input
+              type="text"
+              id="address"
+              name="address"
+              class="mt-1 w-full rounded-md border-gray-200 bg-white text-sm text-gray-700 shadow-sm"
+              required
+            />
+          </div>
+          <div class="col-span-6 sm:col-span-3">
+            <label for="street" class="block text-sm font-medium text-gray-700">
+              Street
+            </label>
+
+            <input
+              type="text"
+              id="street"
+              name="street"
+              class="mt-1 w-full rounded-md border-gray-200 bg-white text-sm text-gray-700 shadow-sm"
+              required
+            />
+          </div>
+
+          <div class="col-span-6 sm:col-span-3">
+            <label
+              for="building-number"
+              class="block text-sm font-medium text-gray-700"
+            >
+              Building number
+            </label>
+
+            <input
+              type="text"
+              id="building-number"
+              name="building-number"
+              class="mt-1 w-full rounded-md border-gray-200 bg-white text-sm text-gray-700 shadow-sm"
+            />
+          </div>
+
+          <div class="col-span-6 sm:col-span-3">
+            <label
+              for="special-landmarks"
+              class="block text-sm font-medium text-gray-700"
+            >
+              Special landmarks
+            </label>
+
+            <input
+              type="text"
+              id="special-landmarks"
+              name="special-landmarks"
+              class="mt-1 w-full rounded-md border-gray-200 bg-white text-sm text-gray-700 shadow-sm"
+            />
+          </div>
+
+          <div class="col-span-6 sm:flex sm:items-center sm:gap-4">
+            <button
+              class="inline-block shrink-0 rounded-md border border-mulledWine px-12 py-3 text-sm font-medium text-white transition hover:bg-transparent hover:text-mulledWine bg-mulledWine"
+              id="proceed-btn"
+            >
+              Proceed
+            </button>
+          </div>
+        </form>
       </div>
     </section>
 
     <!-- Footer -->
     <%- include('components/_footer')%>
+    <script src="https://unpkg.com/leaflet@1.8.0/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
 
+    <!-- Include Flowbite JS -->
+    <script src="https://unpkg.com/flowbite@latest/dist/flowbite.min.js"></script>
+    <!-- Include Ionicons -->
     <script
       type="module"
       src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"
@@ -46,7 +141,5 @@
       nomodule
       src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"
     ></script>
-    <!-- Include Flowbite JS -->
-    <script src="https://unpkg.com/flowbite@latest/dist/flowbite.min.js"></script>
   </body>
 </html>

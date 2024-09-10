@@ -5,6 +5,7 @@ const User = require('../models/userModel');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/AppError');
 const { sendEmail } = require('../utils/email');
+const { sendEmailText } = require('../utils/email');
 const replaceTemplate = require('../dev-data/passwordResetTemplate');
 
 //!Helper methods
@@ -27,14 +28,14 @@ const createSendToken = (user, statusCode, req, res, signup = false) => {
   // Remove password from output
   user.password = undefined;
   //res.status(statusCode).redirect('/');
-  if (!signup)
-    res.status(statusCode).json({
-      status: 'success',
-      token,
-      data: {
-        user,
-      },
-    });
+
+  res.status(statusCode).json({
+    status: 'success',
+    token,
+    data: {
+      user,
+    },
+  });
 };
 exports.restrictTo =
   (...roles) =>
@@ -48,7 +49,19 @@ exports.restrictTo =
 
     next();
   };
+const shortenURL = async (longURL) => {
+  const response = await fetch('https://api-ssl.bitly.com/v4/shorten', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${process.env.BITLY_ACCESS_TOKEN}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ long_url: longURL }),
+  });
 
+  const data = await response.json();
+  return data.link; // This will be the shortened URL
+};
 //!Main functionalities
 exports.renderLoginUI = (req, res, next) => {
   res.render('login');
@@ -74,12 +87,12 @@ exports.signup = catchAsync(async (req, res, next) => {
 
 exports.login = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
-
   //* 1) Check if email and password exist
   if (!email || !password) {
     return next(new AppError('Please provide email and password!', 400));
   }
   //* 2) Check if user exists && password is correct
+
   const user = await User.findOne({ email }).select('+password');
 
   if (!user || !(await user.correctPassword(password, user.password))) {
@@ -184,12 +197,28 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
 
   //*3) Send it to user's email
   try {
-    const resetURL = `${req.protocol}://${req.get(
-      'host',
-    )}/users/resetPassword/${resetToken}`;
-    const html = replaceTemplate(resetURL);
+    const resetURL = await shortenURL(
+      `${req.protocol}://${req.get('host')}/resetPassword/${resetToken}`,
+    );
+    // console.log(resetURL);
 
-    await sendEmail(user.email, 'Password reset (Expires in 10 mins)', html);
+    //!This for html when we get a bussiness account
+    /* const html = replaceTemplate(resetURL);
+    await sendEmail(user.email, 'Password reset (Expires in 10 mins)', html); */
+
+    await sendEmailText(
+      user.email,
+      'Password reset (Expires in 10 mins)',
+      `Hello,
+          To reset your password, please copy and paste the following link into your browser:
+          ${resetURL}
+
+          If you did not request a password reset, please ignore this email.
+          (This link will expire in 10 minutes)
+          Thank you,
+          PPC
+      `,
+    );
 
     res.status(200).json({
       status: 'success',
@@ -218,7 +247,7 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
     passwordResetToken: hashedToken,
     passwordResetExpires: { $gt: Date.now() },
   });
-
+  // console.log('On my way to update');
   //* 2) If token has not expired, and there is user, set the new password
   if (!user) return next(new AppError('Token is invalid or has expired', 400));
 

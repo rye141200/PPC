@@ -48,24 +48,36 @@ cartSchema.virtual('totalPrice').get(function () {
       el.product.price * el.product.discount * el.count,
     0,
   );
-  return totalPrice;
+  return totalPrice.toFixed(2);
 });
-
-cartSchema.methods.addItem = async function (productId) {
+cartSchema.virtual('totalDiscount').get(function () {
+  const totalDiscount = this.items.reduce(
+    (total, el) => total + el.product.price * el.product.discount * el.count,
+    0,
+  );
+  return totalDiscount.toFixed(2);
+});
+cartSchema.virtual('subTotal').get(function () {
+  const subTotal = this.items.reduce(
+    (total, el) => total + el.product.price * el.count,
+    0,
+  );
+  return subTotal.toFixed(2);
+});
+cartSchema.methods.addItem = async function (productId, count = 1) {
   const itemIndex = this.items.findIndex(
     (item) => item.product._id.toString() === productId,
   );
   if (itemIndex > -1) {
     // Item exists, increment count
-    this.items[itemIndex].count += 1;
+    this.items[itemIndex].count += count;
   } else {
     // Item does not exist, add new item
-    this.items.push({ product: productId, count: 1 });
+    this.items.push({ product: productId, count: count });
   }
   await this.save();
   return this;
 };
-
 cartSchema.methods.decrementItemCount = async function (productId) {
   const itemIndex = this.items.findIndex(
     (item) => item.product._id.toString() === productId,
@@ -78,9 +90,7 @@ cartSchema.methods.decrementItemCount = async function (productId) {
 };
 
 cartSchema.methods.removeItem = async function (productId) {
-  this.items = this.items.filter(
-    (item) => item.product._id.toString() !== productId,
-  );
+  this.items = this.items.filter((item) => item.product.id !== productId);
   await this.save();
   return this;
 };
@@ -91,5 +101,5 @@ cartSchema.methods.setItems = async function (items) {
   await this.save();
   return this;
 };
-const Cart = mongoose.model('Cart', cartSchema);
-module.exports = Cart;
+//const Cart = mongoose.model('Cart', cartSchema);
+//module.exports = Cart;

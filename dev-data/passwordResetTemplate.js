@@ -157,7 +157,8 @@ let html = `<!DOCTYPE html>
 <tr>
 <td class="pad" style="padding-bottom:10px;padding-left:30px;padding-right:30px;padding-top:10px;">
 <div style="color:#33563c;font-family:Montserrat, Trebuchet MS, Lucida Grande, Lucida Sans Unicode, Lucida Sans, Tahoma, sans-serif;font-size:25px;line-height:180%;text-align:left;mso-line-height-alt:45px;">
-<p style="margin: 0;">Click on the button to reset your password!</p>
+<p style="margin: 0;">Click on the link to reset your password!</p>
+<a target="_blank" href="<PLACEHOLDER>" style="-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;text-decoration:none;color:#1251BA;font-size:14px">Reset your password</a>
 <p style="margin: 0;">(Link expires in 10 mins)</p>
 <p style="margin: 0;"><span style="word-break: break-word; color: #000000;">NEVER</span> share this link!</p>
 </div>
@@ -208,7 +209,12 @@ let html = `<!DOCTYPE html>
 <w:anchorlock/>
 <v:textbox inset="0px,0px,0px,0px">
 <center dir="false" style="color:#ffffff;font-family:Tahoma, sans-serif;font-size:22px">
-<![endif]--><a href="<PLACEHOLDER>" style="background-color:#262261;border-bottom:0px solid #8a3b8f;border-left:0px solid #8a3b8f;border-radius:4px;border-right:0px solid #8a3b8f;border-top:0px solid #8a3b8f;color:#ffffff;display:inline-block;font-family:Montserrat, Trebuchet MS, Lucida Grande, Lucida Sans Unicode, Lucida Sans, Tahoma, sans-serif;font-size:22px;font-weight:undefined;mso-border-alt:none;padding-bottom:5px;padding-top:5px;text-align:center;text-decoration:none;width:auto;word-break:keep-all;" target="_blank"><span style="word-break: break-word; padding-left: 20px; padding-right: 20px; font-size: 22px; display: inline-block; letter-spacing: normal;"><span style="word-break: break-word; line-height: 44px;">Reset your password</span></span></a><!--[if mso]></center></v:textbox></v:roundrect><![endif]--></div>
+<![endif]-->
+<!--
+LINK  
+<a style="background-color:#262261;border-bottom:0px solid #8a3b8f;border-left:0px solid #8a3b8f;border-radius:4px;border-right:0px solid #8a3b8f;border-top:0px solid #8a3b8f;color:#ffffff;display:inline-block;font-family:Montserrat, Trebuchet MS, Lucida Grande, Lucida Sans Unicode, Lucida Sans, Tahoma, sans-serif;font-size:22px;font-weight:undefined;mso-border-alt:none;padding-bottom:5px;padding-top:5px;text-align:center;text-decoration:none;width:auto;word-break:keep-all;" target="_blank"><span style="word-break: break-word; padding-left: 20px; padding-right: 20px; font-size: 22px; display: inline-block; letter-spacing: normal;"><span style="word-break: break-word; line-height: 44px;">Reset your password</span></span></a>
+-->
+<!--[if mso]></center></v:textbox></v:roundrect><![endif]--></div>
 </td>
 </tr>
 </table>
@@ -421,7 +427,7 @@ let html = `<!DOCTYPE html>
 </body>
 </html>`;
 const replaceTemplate = (url) => {
-  html.replace('<PLACEHOLDER>', url);
+  html.replaceAll('<PLACEHOLDER>', url);
   return html;
 };
 module.exports = replaceTemplate;

@@ -2,6 +2,7 @@ const factory = require('./handlerFactory');
 const Order = require('../models/orderModel');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/AppError');
+const email = require('../utils/email');
 
 exports.createOrder = factory.createOne(Order);
 exports.getOrder = factory.getOne(Order, 'user', 'name email phone');
@@ -15,22 +16,25 @@ exports.setUserId = (req, res, next) => {
   next();
 };
 
-/* exports.validatePurchase = catchAsync(async (req, res, next) => {
-  const payment = req.body;
-  const response = await fetch(
-    `https://api.moyasar.com/v1/payments/${payment.id}`,
+//! Order admits
+exports.admitOrder = catchAsync(async (req, res, next) => {
+  const updatedOrder = await Order.findByIdAndUpdate(
+    req.body.id,
+    { status: req.body.status },
     {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer sk_test_CPiBmCDNr7dPv4jNWbf8KdUt6VxQ1pf9LdEd7mKb`,
-      },
+      new: true,
+      runValidators: true,
     },
   );
-  const data = await response.json();
-  res.status(201).json({
-    status: 'success!',
+  if (!updatedOrder) return next(new AppError('Order not found!', 404));
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      order: updatedOrder,
+    },
   });
-}); */
+});
 
 exports.moyasarWebhook = catchAsync(async (req, res, next) => {
   //!1) Verifying the signature
@@ -43,6 +47,7 @@ exports.moyasarWebhook = catchAsync(async (req, res, next) => {
   const order = await Order.findOne({ paymentID: payment.data.id }).setOptions({
     bypassFilter: true,
   });
+
   if (!order) return next(new AppError('Order does not exist!', 404));
   if (
     payment.type === 'payment_failed' ||
@@ -56,12 +61,19 @@ exports.moyasarWebhook = catchAsync(async (req, res, next) => {
     });
   }
   //!3) Else complete with the save product and send it back in the response
-  if (payment.type === 'payment_paid')
+  if (payment.type === 'payment_paid') {
     await Order.findByIdAndUpdate(
       order.id,
-      { paid: true },
+      { paid: true, status: 'accepted' },
       { new: true },
     ).setOptions({ bypassFilter: true });
+
+    await email.sendEmail(
+      order.user.email,
+      'Order confirmation',
+      `<h1>Thanks for your purchase</h1>`,
+    );
+  }
 
   res.status(200).json({
     status: 'success',

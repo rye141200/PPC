@@ -10,6 +10,7 @@
       rel="stylesheet"
     />
     <script defer src="/js/login.js" type="module"></script>
+    <script defer src="/js/searchBar.js" type="module"></script>
     <script defer src="/js/product.js" type="module"></script>
   </head>
   <body class="relative min-h-screen bg-[#f9fafb]">
@@ -59,7 +60,7 @@
               <a
                 href="#"
                 class="ms-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ms-2"
-                ><%= product.category %></a
+                ><%= product.category.name %></a
               >
             </div>
           </li>
@@ -111,17 +112,23 @@
                 <%=product.name%>
               </h1>
 
-              <p
-                class="mt-3 text-gray-500 product-description"
-                id="product-description"
-              >
-                <%=product.description%>
-              </p>
+              <div class="mt-3">
+                <span>Description:</span>
+                <p
+                  class="text-gray-500 product-description"
+                  id="product-description"
+                >
+                  <%=product.description%>
+                </p>
+              </div>
             </div>
 
             <div class="flex items-center mt-6">
-              <span class="text-2xl product-price" id="product-price"
-                ><%=product.price%>$</span
+              <span
+                class="text-2xl product-price"
+                id="product-price"
+                data-discount="<%=product.discount%>"
+                ><%=product.price%> SAR</span
               >
             </div>
 

@@ -8,7 +8,9 @@
     "start:prod": "NODE_ENV=production nodemon server.js",
     "debug": "ndb server.js",
     "build_tw": " tailwindcss -i ./public/css/input.css -o ./public/css/home.css ",
-    "watch_tw": " tailwindcss -i ./public/css/input.css -o ./public/css/home.css --watch"
+    "watch_tw": " tailwindcss -i ./public/css/input.css -o ./public/css/home.css --watch",
+    "watch:js": "parcel watch ./public/js/index.js --out-dir ./public/js --out-file bundle.js",
+    "build:js": "parcel build ./public/js/index.js --out-dir ./public/js --out-file bundle.js"
   },
   "author": "Ahmad Mahfouz",
   "license": "ISC",
@@ -25,8 +27,10 @@
     "hpp": "^0.2.3",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.5.2",
+    "mongoose-sequence": "^6.0.1",
     "morgan": "^1.10.0",
     "multer": "^1.4.5-lts.1",
+    "node-fetch": "^3.3.2",
     "nodemailer": "^6.9.14",
     "parcel-bundler": "^1.12.5",
     "sharp": "^0.33.4",

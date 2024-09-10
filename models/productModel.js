@@ -32,32 +32,54 @@ const productSchema = new mongoose.Schema(
       type: Number,
       min: [0, `Discount {VALUE} must be a positive number`],
       max: [1, `Discount {VALUE} must be less than 1!`],
-      validate: {
-        validator: function (value) {
-          return value < this.price;
-        },
-        message: 'Discount {VALUE} must be less than the price!',
-      },
       default: 0,
     },
     slug: {
       type: String,
     },
     category: {
-      type: String,
-      enum: ['camera', 'router', 'package'],
+      type: mongoose.Schema.ObjectId,
+      ref: 'Category',
       required: [true, 'A product must belong to a category!'],
+    },
+    deleted: {
+      type: Boolean,
+      default: false,
     },
   },
   {
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
     timestamps: true,
   },
 );
-//! documet pre hook
+//! Pre document middleware
 productSchema.pre('save', function (next) {
   this.slug = slugify(this.name, { lower: true });
   next();
 });
+productSchema.pre(/^find/, function (next) {
+  if (!this.getOptions().bypassFilter) this.find({ deleted: { $ne: true } });
+  this.populate('category');
+  next();
+});
+//! Pre query middleware
+/* productSchema.pre(/find^/, function (next) {
+  if (this.isModified('name')) this.slug = slugify(this.name, { lower: true });
+  next();
+}); */
 const Product = mongoose.model('Product', productSchema);
 
 module.exports = Product;
+
+/* 
+  Description: 
+  One of the gay rights activists, Mr, should I call you Mista? Pepe Julian ONZEMA! Thank you for coming in, thank you....
+  WHY ARE YOU GAEH?
+  WHO SAYS I AM GAEH?
+  YOU ARE GAEH,
+  YOU ARE REPRESENTITAVE FOR 
+  L G B T I
+  LESBIANS, GAYS BISEXUALS, BOBNAWAA , TRANSGENDAS AND INTERSEXUAL
+  WHERE IS DA "H"
+*/

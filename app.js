@@ -16,6 +16,7 @@ const orderRouter = require('./routes/orderRoutes');
 const viewRouter = require('./routes/viewRoutes');
 const orderController = require('./controllers/orderController');
 const cartRouter = require('./routes/cartRoutes');
+const categoryRouter = require('./routes/categoryRoutes');
 
 const app = express();
 
@@ -45,7 +46,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 //? Body parser, reading data from body into req.body
 app.use(express.json({ limit: '10kb' }));
-app.use(express.urlencoded({ extended: true, limit: '50kb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(cors());
 
 //? Data sanitization against NoSQL query injection
@@ -63,17 +64,18 @@ app.use(
 
 //!2) Routes
 app.post('/moyasar-webhook', orderController.moyasarWebhook);
-app.get('/payment', (req, res) => {
-  res.status(200).render('payment');
-});
-app.use('/', viewRouter);
+
 app.use('/user', userRouter);
 app.use('/product', productRouter);
 app.use('/order', orderRouter);
+app.use('/category', categoryRouter);
 app.use('/cart', cartRouter);
+app.use('/', viewRouter);
 
 app.all('*', (req, res, next) => {
-  next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
+  next(
+    new AppError(`Can't find ${req.originalUrl} on this server!`, 404, true),
+  );
 });
 app.use(globalErrorHandler);
 

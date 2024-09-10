@@ -27,3 +27,17 @@
   color: var(--color-mulledWine);
   background-color: white !important;
 }
+
+.delete-btn {
+  color: white;
+  background-color: #ff2e2e !important;
+}
+
+.delete-btn:hover {
+  color: #ff2e2e;
+  background-color: white !important;
+}
+
+.delete-btn-cart {
+  color: #ff2e2e;
+}

@@ -13,7 +13,7 @@ export class Alert {
     if (document.querySelector('#success-message')) return;
     // Insert the HTML with the unique id
     const htmlEl = `<div
-        class="flex w-full max-w-sm overflow-hidden bg-white rounded-lg shadow-md top-2 left-2 z-50 fixed"
+        class="flex w-full max-w-sm overflow-hidden bg-white rounded-lg shadow-md top-2 left-2 z-100 fixed"
         id="${uniqueId}"
       >
         <div class="flex items-center justify-center w-12 bg-emerald-500">
@@ -54,7 +54,7 @@ export class Alert {
     if (document.querySelector('#failure-message')) return;
     // Insert the HTML with the unique id
     const htmlEl = `<div
-        class="flex w-full max-w-sm overflow-hidden bg-white rounded-lg shadow-md fixed top-2 left-2 z-50"
+        class="flex w-full max-w-sm overflow-hidden bg-white rounded-lg shadow-md fixed top-2 left-2 z-100"
          id="${uniqueId}"
       >
         <div class="flex items-center justify-center w-12 bg-red-500">

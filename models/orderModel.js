@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const autoIncrement = require('mongoose-sequence')(mongoose);
 
 const orderSchema = new mongoose.Schema(
   {
@@ -26,13 +27,25 @@ const orderSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ['pending', 'shipped', 'delivered', 'cancelled'],
+      enum: ['pending', 'accepted', 'shipped', 'cancelled'],
       default: 'pending',
     },
     location: {
-      type: String,
-      required: true,
-      trim: true,
+      location: {
+        type: String,
+        required: true,
+        trim: true,
+      },
+      address: {
+        type: String,
+        required: true,
+      },
+      street: {
+        type: String,
+        required: true,
+      },
+      buildingno: String,
+      specialLandmarks: String,
     },
     paymentID: {
       type: String,
@@ -43,6 +56,10 @@ const orderSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    orderid: {
+      type: Number,
+      unique: true,
+    },
   },
   {
     toJSON: { virtuals: true },
@@ -50,6 +67,8 @@ const orderSchema = new mongoose.Schema(
     timestamps: true,
   },
 );
+orderSchema.plugin(autoIncrement, { inc_field: 'orderid' });
+
 //! To calculate the total price
 orderSchema.virtual('totalPrice').get(function () {
   const totalPrice = this.products.reduce(
@@ -59,17 +78,20 @@ orderSchema.virtual('totalPrice').get(function () {
       el.product.price * el.product.discount * el.count,
     0,
   );
-  return totalPrice;
+  return totalPrice.toFixed(2);
 });
-
+orderSchema.virtual('orderName').get(function () {
+  return `#ORD-${this.orderid}`;
+});
 //! Query middlewares
 orderSchema.pre(/^find/, function (next) {
   if (!this.getOptions().bypassFilter) this.find({ paid: { $ne: false } });
   this.populate({
     path: 'products.product',
-    select: 'name price discount category',
-  });
-  //.populate({ path: 'user', select: 'name email' });
+    options: { bypassFilter: true },
+  })
+    .setOptions({ bypassFilter: true })
+    .populate('user');
   next();
 });
 
@@ -82,6 +104,8 @@ orderSchema.pre('save', async function (next) {
   }
   next();
 });
+
+//! Identity
 
 const Order = mongoose.model('Order', orderSchema);
 

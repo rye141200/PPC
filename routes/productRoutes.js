@@ -16,9 +16,7 @@ router
     productController.createProduct,
   );
 
-router
-  .route('/cart')
-  .get(authController.protect, productController.getCartProducts);
+router.route('/cart').get(productController.getCartProducts);
 
 router
   .route('/:id')
@@ -26,8 +24,8 @@ router
   .patch(
     authController.protect,
     authController.restrictTo('admin'),
-    productController.deleteProductImage,
     productController.uploadImage,
+    productController.deleteProductImage,
     productController.resizeProductImage,
     productController.addImageName,
     productController.updateProduct,
@@ -35,7 +33,7 @@ router
   .delete(
     authController.protect,
     authController.restrictTo('admin'),
-    productController.deleteProductImage,
+    //productController.deleteProductImage,
     productController.deleteProduct,
   );
 

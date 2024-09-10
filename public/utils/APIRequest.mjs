@@ -6,6 +6,7 @@ export class APIRequest {
     method,
     body,
     contentType = 'application/json',
+    showError = false,
   ) {
     try {
       const response = await fetch(url, {
@@ -19,6 +20,7 @@ export class APIRequest {
       if (response.ok) return true;
       return false;
     } catch (err) {
+      if (showError) console.log(err);
       return false;
     }
   }
@@ -36,7 +38,33 @@ export class APIRequest {
       if (response.ok) return await response.json();
       return false;
     } catch (err) {
-      console.log(err);
+      return false;
+    }
+  }
+
+  static async sendImageFormRequest(url, method, body) {
+    try {
+      const response = await fetch(url, {
+        method,
+        body,
+      });
+      return { ok: response.ok, res: await response.json() };
+    } catch (err) {
+      return false;
+    }
+  }
+
+  static async SendRequestAndGetInfo(url, method, body) {
+    try {
+      const response = await fetch(url, {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body),
+      });
+      return { ok: response.ok, res: await response.json() };
+    } catch (err) {
       return false;
     }
   }

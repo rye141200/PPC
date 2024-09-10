@@ -1,30 +1,20 @@
+const dotenv = require('dotenv');
 const mongoose = require('mongoose');
-const fs = require('fs');
-const User = require('../models/userModel');
+//const fs = require('fs');
+//const User = require('../models/userModel');
+const Order = require('../models/orderModel');
+const Cart = require('../models/cartModel');
 
-mongoose
-  .connect(
-    'mongodb+srv://omarsaleh12216:deadman3@cluster0.57enkiv.mongodb.net/natours?retryWrites=true&w=majority',
-    {
-      useNewUrlParser: true,
-      useCreateIndex: true,
-      useFindAndModify: false,
-    },
-  )
-  .then(() => console.log('DB connection successful 😶‍🌫️'));
+dotenv.config({ path: './config.env' });
+
+const DB = process.env.DB.replace('<PASSWORD>', process.env.DB_PASSWORD);
+mongoose.connect(DB).then(() => console.log('DB connection successful 😶‍🌫️'));
 //! read json file
 //! import data into db
-const tours = JSON.parse(fs.readFileSync(`${__dirname}/tours.json`));
-const reviews = JSON.parse(fs.readFileSync(`${__dirname}/reviews.json`));
-// console.log(reviews);
-const users = JSON.parse(fs.readFileSync(`${__dirname}/users.json`));
-// console.log(users);
 
 const importData = async () => {
   try {
-    await Tour.create(tours);
-    await User.create(users, { validateBeforeSave: false });
-    await Review.create(reviews);
+    //! Import here
     process.exit(1);
   } catch (e) {
     console.log(e);
@@ -34,9 +24,8 @@ const importData = async () => {
 
 const deleteData = async () => {
   try {
-    await Tour.deleteMany();
-    await User.deleteMany();
-    await Review.deleteMany();
+    await Order.deleteMany();
+    await Cart.deleteMany();
     process.exit(1);
   } catch (e) {
     console.log(e);

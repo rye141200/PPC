@@ -1,9 +1,8 @@
 /*eslint-disable */
 /* eslint-disable no-useless-escape */
 'use-strict';
-const orderTypeSelect = document.getElementById('order-type');
+import { APIRequest } from '../utils/APIRequest.mjs';
+import { Cart } from '../utils/Cart.mjs';
+import { Alert } from '../utils/alerts.mjs';
 
-// Add an event listener for the change event
-orderTypeSelect.addEventListener('change', function (event) {
-  const selectedValue = event.target.value;
-});
+//! event Handlers

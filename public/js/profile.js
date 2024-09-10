@@ -40,11 +40,13 @@ saveChangesBtn.addEventListener('click', async (e) => {
     });
     if (response) {
       await Alert.displaySuccess('Changes have been made', delay);
+      window.location.href = '/profile';
     } else {
       await Alert.displayFailure('Failed to update !', delay);
     }
   }
 });
+
 savePassBtn.addEventListener('click', async (e) => {
   const passwordCurrent = document.querySelector('.currentPass');
   const password = document.querySelector('.newPass');
@@ -73,6 +75,7 @@ savePassBtn.addEventListener('click', async (e) => {
   );
   if (response) {
     await Alert.displaySuccess('Password has been changed', delay);
+    window.location.href = '/profile';
   } else {
     await Alert.displayFailure('Current password is wrong!', delay);
   }
