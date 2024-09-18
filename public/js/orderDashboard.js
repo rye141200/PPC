@@ -29,7 +29,7 @@ const admitOrder = async (element) => {
   const currentStatus = window.location.pathname.split('/')[4];
   const status = decideNewStatus(currentStatus);
   const id = element.dataset.orderId;
-
+  console.log(status);
   const resObj = await APIRequest.SendRequestAndGetInfo(
     '/order/status',
     'PATCH',
