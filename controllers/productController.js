@@ -7,6 +7,7 @@ const handlerFactory = require('./handlerFactory');
 const Product = require('../models/productModel');
 const AppError = require('../utils/AppError');
 const catchAsync = require('../utils/catchAsync');
+const Category = require('../models/categoryModel');
 
 // Multer configuration
 const multerStorage = multer.memoryStorage();
@@ -69,12 +70,11 @@ exports.updateProduct = catchAsync(async (req, res, next) => {
   // Check if name exists and create slug
   if (req.body.name) req.body.slug = slugify(req.body.name, { lower: true });
 
-  // console.log(req.body);
   // Update product
   const product = await Product.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
     runValidators: true,
-  });
+  }).setOptions({ bypassFilter: true });
 
   if (!product) {
     return res.status(404).json({
@@ -202,3 +202,24 @@ exports.searchProducts = catchAsync(
     }
   },
 );
+
+exports.aliasCategory = catchAsync(async (req, res, next) => {
+  if (req.query.category) {
+    req.query.category = await Category.findOne({ name: req.query.category });
+  }
+  next();
+});
+
+exports.restoreProduct = catchAsync(async (req, res, next) => {
+  const product = await Product.findByIdAndUpdate(req.params.id, req.body, {
+    runValidators: true,
+    new: true,
+  }).setOptions({ bypassFilter: true });
+  if (!product) return next(new AppError('Product not found!', 404));
+  res.status(200).json({
+    status: 'success',
+    data: {
+      document: product,
+    },
+  });
+});

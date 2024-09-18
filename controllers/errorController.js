@@ -8,7 +8,7 @@ const handleCastErrorDB = (err) => {
 };
 const handleDuplicateFieldsDB = (err) => {
   const value = err.keyValue.name;
-  const message = `Duplicate field value: ${value} . Please use another value!`;
+  const message = `${value} is already used! Please use another value!`;
   return new AppError(message, 400);
 };
 const handleValidationErrorDB = (err) => {
@@ -26,7 +26,19 @@ const sendErrorDev = (err, res) => {
     stack: err.stack,
   });
 };
+
 const sendErrorProd = (err, res) => {
+  const statusCodes = {
+    400: 'Bad Request',
+    401: 'Unauthorized',
+    403: 'Forbidden',
+    404: 'Not Found',
+    500: 'Internal Server Error',
+    502: 'Bad Gateway',
+    503: 'Service Unavailable',
+    504: 'Gateway Timeout',
+  };
+
   if (!err.render && err.isOperational)
     //Operational errors like 404s etc
     res.status(err.statusCode).json({
@@ -36,14 +48,17 @@ const sendErrorProd = (err, res) => {
   else if (err.render && err.isOperational)
     res.status(err.statusCode).render('errorPage', {
       title: 'Error',
-      status: err.status,
+      statusCode: err.statusCode,
+      header: statusCodes[err.statusCode],
       message: err.message,
     });
   else
-    res.status(404).render('errorPage', {
+    res.status(err.statusCode).render('errorPage', {
+      statusCode: err.statusCode,
       title: 'Error',
+      header: 'Server error!',
       message: 'Something went wrong! 💥',
-    }); //! !render and !operational
+    }); //! render and !operational
 };
 
 module.exports = (err, req, res, next) => {

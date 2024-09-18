@@ -77,28 +77,30 @@ const revokeOrder = async (element) => {
 };
 
 //! Handlers
-orderContainerEl.addEventListener('click', async (e) => {
-  const element = e.target;
-  if (
-    !element.classList.contains('admit-btn') &&
-    !element.classList.contains('cancel-order') &&
-    !element.classList.contains('revoke-btn')
-  )
-    return;
+export const orderDashboardModule = () => {
+  orderContainerEl.addEventListener('click', async (e) => {
+    const element = e.target;
+    if (
+      !element.classList.contains('admit-btn') &&
+      !element.classList.contains('cancel-order') &&
+      !element.classList.contains('revoke-btn')
+    )
+      return;
 
-  if (element.classList.contains('admit-btn')) admitOrder(element);
-  else if (element.classList.contains('cancel-order')) cancelOrder(element);
-  else revokeOrder(element);
-});
+    if (element.classList.contains('admit-btn')) admitOrder(element);
+    else if (element.classList.contains('cancel-order')) cancelOrder(element);
+    else revokeOrder(element);
+  });
 
-document.addEventListener('DOMContentLoaded', function () {
-  if (window.location.href.includes('pending')) {
-    activateAnchor(pendingAnchorEl);
-  } else if (window.location.href.includes('accepted')) {
-    activateAnchor(acceptedAnchorEl);
-  } else if (window.location.href.includes('shipped')) {
-    activateAnchor(shippedAnchorEl);
-  } else if (window.location.href.includes('cancelled')) {
-    activateAnchor(cancelledAnchorEl);
-  }
-});
+  document.addEventListener('DOMContentLoaded', function () {
+    if (window.location.href.includes('pending')) {
+      activateAnchor(pendingAnchorEl);
+    } else if (window.location.href.includes('accepted')) {
+      activateAnchor(acceptedAnchorEl);
+    } else if (window.location.href.includes('shipped')) {
+      activateAnchor(shippedAnchorEl);
+    } else if (window.location.href.includes('cancelled')) {
+      activateAnchor(cancelledAnchorEl);
+    }
+  });
+};

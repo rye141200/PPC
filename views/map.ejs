@@ -30,9 +30,10 @@
       defer
       src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"
     ></script>
-    <script defer src="/js/searchBar.js" type="module"></script>
+    <!-- <script defer src="/js/searchBar.js" type="module"></script>
     <script defer src="/js/login.js" type="module"></script>
-    <script defer src="/js/map.js" type="module"></script>
+    <script defer src="/js/map.js" type="module"></script> -->
+    <script defer src="/js/index.js" type="module"></script>
   </head>
   <body class="relative min-h-screen bg-[#f9fafb]">
     <!--Header-->
@@ -56,7 +57,7 @@
               for="address"
               class="block text-sm font-medium text-gray-700"
             >
-              Address
+              Address *
             </label>
 
             <input
@@ -69,7 +70,7 @@
           </div>
           <div class="col-span-6 sm:col-span-3">
             <label for="street" class="block text-sm font-medium text-gray-700">
-              Street
+              Street *
             </label>
 
             <input
@@ -86,7 +87,7 @@
               for="building-number"
               class="block text-sm font-medium text-gray-700"
             >
-              Building number
+              Building number (optional)
             </label>
 
             <input
@@ -102,7 +103,7 @@
               for="special-landmarks"
               class="block text-sm font-medium text-gray-700"
             >
-              Special landmarks
+              Special landmarks (optional)
             </label>
 
             <input

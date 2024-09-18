@@ -6,7 +6,7 @@ const router = express.Router();
 
 router
   .route('/')
-  .get(productController.getAllProducts)
+  .get(productController.aliasCategory, productController.getAllProducts)
   .post(
     authController.protect,
     authController.restrictTo('admin'),
@@ -18,6 +18,13 @@ router
 
 router.route('/cart').get(productController.getCartProducts);
 
+router
+  .route('/restore/:id')
+  .patch(
+    authController.protect,
+    authController.restrictTo('admin'),
+    productController.restoreProduct,
+  );
 router
   .route('/:id')
   .get(productController.getProduct)
@@ -36,5 +43,4 @@ router
     //productController.deleteProductImage,
     productController.deleteProduct,
   );
-
 module.exports = router;

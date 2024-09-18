@@ -41,28 +41,45 @@ const startTimer = (domElement) => {
 //! Listeners
 
 // Validator.validateField(document.querySelectorAll('.form'));
-forgotPassword.addEventListener('click', async (e) => {
-  e.preventDefault();
-  //! 1) Get the email
-  const email = document.querySelector('#email-forgot-password').value;
-  if (!Validator.isValidEmail(email))
-    return Alert.displayFailure('Invalid email!', 2000);
+export const forgotPasswordModule = () =>
+  forgotPassword.addEventListener('click', async (e) => {
+    e.preventDefault();
+    //! 1) Get the email
+    const email = document.querySelector('#email-forgot-password').value;
+    if (!Validator.isValidEmail(email))
+      return Alert.displayFailure('Invalid email!', 2000);
 
-  //! 2) Trigger the sending reset password email
-  const response = await APIRequest.sendRequestToAPI(
-    '/user/forgotPassword',
-    'POST',
-    {
-      email,
-    },
-  );
-  //! 3) De-activate the button for 1 min
-  if (response)
-    forgotPassword.classList.add(
-      'bg-blue-500 text-white font-bold py-2 px-4 rounded disabled:bg-gray-400 disabled:cursor-not-allowed',
+    //! 2) Trigger the sending reset password email
+    const response = await APIRequest.SendRequestAndGetInfo(
+      '/user/forgotPassword',
+      'POST',
+      {
+        email,
+      },
     );
-  startTimer();
-  forgotPassword.classList.remove(
-    'bg-blue-500 text-white font-bold py-2 px-4 rounded disabled:bg-gray-400 disabled:cursor-not-allowed',
-  );
-});
+    //! 3) De-activate the button for 1 min
+    if (response.ok) {
+      const forgotPasswordButton = document.getElementById(
+        'forgot-password-submit',
+      );
+      let countdown = 60;
+
+      // Save the original button content
+      const originalButtonContent = forgotPasswordButton.innerHTML;
+
+      // Disable the button and start the countdown timer
+      forgotPasswordButton.disabled = true;
+
+      const timerInterval = setInterval(() => {
+        forgotPasswordButton.innerHTML = `Please wait... ${countdown}s`;
+        countdown--;
+
+        // When countdown reaches 0, reset the button
+        if (countdown < 0) {
+          clearInterval(timerInterval); // Stop the timer
+          forgotPasswordButton.innerHTML = originalButtonContent; // Restore original content
+          forgotPasswordButton.disabled = false; // Enable the button again
+        }
+      }, 1000); // Update the countdown every second
+    } else await Alert.displayFailure(response.res.message, 2000);
+  });

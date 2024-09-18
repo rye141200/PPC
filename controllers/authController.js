@@ -43,7 +43,11 @@ exports.restrictTo =
     // roles ['admin']. role='user'
     if (!roles.includes(req.user.role)) {
       return next(
-        new AppError('You do not have permission to perform this action', 403),
+        new AppError(
+          'You do not have permission to perform this action',
+          403,
+          true,
+        ),
       );
     }
 
@@ -62,6 +66,7 @@ const shortenURL = async (longURL) => {
   const data = await response.json();
   return data.link; // This will be the shortened URL
 };
+
 //!Main functionalities
 exports.renderLoginUI = (req, res, next) => {
   res.render('login');
@@ -125,7 +130,11 @@ exports.protect = catchAsync(async (req, res, next) => {
 
   if (!token) {
     return next(
-      new AppError('You are not logged in! Please log in to get access.', 401),
+      new AppError(
+        'You are not logged in! Please log in to get access.',
+        401,
+        true,
+      ),
     );
   }
 
@@ -139,6 +148,7 @@ exports.protect = catchAsync(async (req, res, next) => {
       new AppError(
         'The user belonging to this token does no longer exist.',
         401,
+        true,
       ),
     );
   }
@@ -146,7 +156,11 @@ exports.protect = catchAsync(async (req, res, next) => {
   // 4) Check if user changed password after the token was issued
   if (currentUser.changedPasswordAfter(decoded.iat)) {
     return next(
-      new AppError('User recently changed password! Please log in again.', 401),
+      new AppError(
+        'User recently changed password! Please log in again.',
+        401,
+        true,
+      ),
     );
   }
 
@@ -188,6 +202,7 @@ exports.isLoggedIn = async (req, res, next) => {
 exports.forgotPassword = catchAsync(async (req, res, next) => {
   //*1) Get email
   const user = await User.findOne({ email: req.body.email });
+
   if (!user)
     return next(new AppError('There is no user with such email!', 404));
 
@@ -197,9 +212,8 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
 
   //*3) Send it to user's email
   try {
-    const resetURL = await shortenURL(
-      `${req.protocol}://${req.get('host')}/resetPassword/${resetToken}`,
-    );
+    const resetURL = `${req.protocol}://${req.get('host')}/resetPassword/${resetToken}`;
+
     // console.log(resetURL);
 
     //!This for html when we get a bussiness account

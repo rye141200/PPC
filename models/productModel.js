@@ -71,15 +71,3 @@ productSchema.pre(/^find/, function (next) {
 const Product = mongoose.model('Product', productSchema);
 
 module.exports = Product;
-
-/* 
-  Description: 
-  One of the gay rights activists, Mr, should I call you Mista? Pepe Julian ONZEMA! Thank you for coming in, thank you....
-  WHY ARE YOU GAEH?
-  WHO SAYS I AM GAEH?
-  YOU ARE GAEH,
-  YOU ARE REPRESENTITAVE FOR 
-  L G B T I
-  LESBIANS, GAYS BISEXUALS, BOBNAWAA , TRANSGENDAS AND INTERSEXUAL
-  WHERE IS DA "H"
-*/

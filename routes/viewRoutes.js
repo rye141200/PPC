@@ -5,6 +5,7 @@ const userController = require('../controllers/userController');
 const Product = require('../models/productModel');
 const Order = require('../models/orderModel');
 const categoryController = require('../controllers/categoryController');
+const Category = require('../models/categoryModel');
 
 const router = express.Router();
 router.use(authController.isLoggedIn);
@@ -17,7 +18,10 @@ router.get('/checkout', viewController.renderCheckout);
 router.get('/me/orders', authController.protect, viewController.renderMyOrders);
 router.route('/forgotpassword').get(viewController.renderForgotPassword);
 router.route('/resetPassword/:token').get(viewController.renderResetPassword);
-router.route('/search').get(viewController.renderSearchResult);
+router.route('/search').get(viewController.renderProductsBysubString);
+router
+  .route('/thanks-for-purchase')
+  .get(authController.protect, viewController.renderThanks);
 /**
  * /admin/dashboard/products
  * /admin/dashboard/products/id
@@ -31,12 +35,38 @@ router.get(
   viewController.renderDashboard(Product, 'dashboardProducts'),
 );
 router.get(
+  '/admin/dashboard/products/deleted',
+  authController.protect,
+  authController.restrictTo('admin'),
+  viewController.renderDeleted(Product, 'deletedProductsDashboard'),
+);
+router.get(
   '/admin/dashboard/products/:slug',
   authController.protect,
   authController.restrictTo('admin'),
   viewController.renderDashboard(Product, 'dashboardProducts'),
 );
+//! Categories
+router.get(
+  '/admin/dashboard/categories',
+  authController.protect,
+  authController.restrictTo('admin'),
+  viewController.renderDashboard(Category, 'dashboardCategories'),
+);
+router.get(
+  '/admin/dashboard/categories/deleted',
+  authController.protect,
+  authController.restrictTo('admin'),
+  viewController.renderDeleted(Category, 'deletedCategoriesDashboard'),
+);
+router.get(
+  '/admin/dashboard/categories/:slug',
+  authController.protect,
+  authController.restrictTo('admin'),
+  viewController.renderDashboard(Category, 'dashboardCategories'),
+);
 
+//! Orders
 router.get(
   '/admin/dashboard/orders/',
   authController.protect,

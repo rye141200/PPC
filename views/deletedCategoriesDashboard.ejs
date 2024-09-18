@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%=title%></title>
+    <link href="/css/home.css" rel="stylesheet" />
+    <link
+    href="https://unpkg.com/flowbite@1.5.0/dist/flowbite.min.css"
+    rel="stylesheet"
+    />
+    <!-- <script defer src="/js/login.js" type="module"></script>
+    <script defer src="/js/searchBar.js" type="module"></script>
+    <script defer src="/js/productsDashboard.js" type="module"></script> -->
+    <script defer src="/js/index.js" type="module"></script>
+  </head>
+  <body class="relative min-h-screen bg-[#f9fafb]">
+    <%- include('components/_header')%>
+    <!-- stepper -->
+    <section class="container mx-auto pl-6 md:pl-0 mt-6">
+      <nav class="flex" aria-label="Breadcrumb">
+        <ol class="inline-flex items-center space-x-1 md:space-x-2">
+          <li class="inline-flex items-center">
+            <a
+              href="/"
+              class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-mulledWine"
+            >
+              <svg
+                class="w-3 h-3 me-2.5"
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  d="m19.707 9.293-2-2-7-7a1 1 0 0 0-1.414 0l-7 7-2 2a1 1 0 0 0 1.414 1.414L2 10.414V18a2 2 0 0 0 2 2h3a1 1 0 0 0 1-1v-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v4a1 1 0 0 0 1 1h3a2 2 0 0 0 2-2v-7.586l.293.293a1 1 0 0 0 1.414-1.414Z"
+                />
+              </svg>
+              Home
+            </a>
+          </li>
+          <li>
+            <div class="flex items-center">
+              <svg
+                class="rtl:rotate-180 w-3 h-3 text-gray-400 mx-1"
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 6 10"
+              >
+                <path
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="m1 9 4-4-4-4"
+                />
+              </svg>
+              <a
+                href="/admin/dashboard"
+                class="ms-1 text-sm font-medium text-gray-700 hover:text-mulledWine md:ms-2"
+                >Dashboard</a
+              >
+            </div>
+          </li>
+        </ol>
+      </nav>
+    </section>
+    <section class="relative container mx-auto pl-6 pr-6 md:pl-0 md:pr-0 my-10">
+    
+      <div class="flex flex-col space-y-2">
+        <div class="flex flex-row space-x-2">
+
+          <a class="w-1/2 flex justify-center items-center space-x-3 bg-gray-100 py-4 rounded-lg hover:bg-gray-300" href="/admin/dashboard/products/">
+                <button class="flex items-center justify-center flex-shrink-0 w-10 h-10 rounded cursor-pointer">
+                  <ion-icon name="cube-outline" class="w-6 h-6 text-black-500"></ion-icon>
+                </button>
+                <span class="leading-none text-lg font-bold">Products</span>
+            </a>
+            <a class="w-1/2 flex justify-center items-center space-x-3 bg-gray-100 py-4 rounded-lg hover:bg-gray-300" href="/admin/dashboard/orders/accepted">
+                <button class="flex items-center justify-center flex-shrink-0 w-10 h-10 rounded cursor-pointer">
+                    <ion-icon name="receipt-outline" class="w-6 h-6 text-black-500"></ion-icon>
+                </button>
+                <span class="leading-none text-lg font-bold">Orders</span>
+            </a>
+            <a class="w-1/2 flex justify-center items-center space-x-3 bg-mulledWine py-4 rounded-lg" href="/admin/dashboard/categories">
+                <button class="flex items-center justify-center flex-shrink-0 w-10 h-10 rounded cursor-pointer">
+                  <ion-icon name="grid-outline" class="w-6 h-6 text-white"></ion-icon>
+                </button>
+                <span class="leading-none text-lg font-bold text-white">Categories</span>
+            </a>
+
+        </div>
+        
+        <div class="flex flex-col md:flex-row md:space-x-2 space-y-2 md:space-y-0">
+          <div class="md:w-1/4 flex flex-row md:flex-col overflow-y-auto p-4 bg-gray-100 rounded-lg space-y-0 space-x-2 md:space-y-2 md:space-x-0">
+            <a class="flex items-center flex-shrink-0 h-10 px-3 text-sm font-medium bg-gray-200 rounded hover:bg-gray-300" href="/admin/dashboard/categories">
+                <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                </svg>
+                <span class="ml-2 leading-none">New category</span>
+            </a>
+            <a class="flex items-center flex-shrink-0 h-10 px-3 text-sm font-medium rounded bg-mulledWine text-white" href="/admin/dashboard/categories/deleted">
+              <ion-icon name="trash-outline"></ion-icon>
+                <span class="ml-2 leading-none">Deleted categories</span>
+            </a>
+          <% if(typeof document !== 'undefined' ) { %>
+          <% document.forEach(category => { %>
+            <% if(typeof selectedDocument !=='undefined' && selectedDocument.name === category.name) {%>
+          <a
+            class="flex items-center flex-shrink-0 h-10 px-2 text-sm font-medium rounded bg-mulledWine text-white cursor-pointer"
+            href="/admin/dashboard/categories/<%=product.slug%>"
+          >
+            <span class="leading-none"><%=category.name%></span>
+          </a>
+          <% } else { %>
+            <a
+            class="flex items-center flex-shrink-0 h-10 px-2 not:space-y-2 text-sm font-medium rounded hover:bg-gray-300 cursor-pointer "
+            href="/admin/dashboard/categories/<%=category.slug%>"
+            
+          >
+            <span class="leading-none"><%=category.name%></span>
+          </a>
+            <% } %>
+          <% }); %>
+        <% } %>
+        
+        </div>
+      
+
+
+        <!-- products.ejs -->
+
+<div class="md:w-3/4 bg-gray-100 flex-grow p-4 rounded-lg">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <% deletedEntities.forEach(category => { %>
+        <div class="max-w-sm rounded overflow-hidden shadow-lg bg-white">
+          <div class="px-6 py-4">
+            <div class="font-bold text-xl mb-2"><%= category.name %></div>
+          </div>
+          <div class="px-6 pt-4 pb-2">
+            <button id="restore-btn"class="btn-animated bg-green-500 hover:bg-white hover:text-green-500 text-white font-bold py-2 px-4 rounded-full"
+            data-product-id="<%=category._id%>">
+              Restore
+            </button>
+          </div>
+        </div>
+      <% }); %>
+    </div>
+  </div>
+  
+  
+  
+      </div>
+      </div>
+      
+    </section>
+    
+
+    <!-- Footer -->
+    <%- include('components/_footer')%>
+
+    <script
+      type="module"
+      src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"
+    ></script>
+    <script
+      nomodule
+      src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"
+    ></script>
+    <!-- Include Flowbite JS -->
+    <script src="https://unpkg.com/flowbite@latest/dist/flowbite.min.js"></script>
+  </body>
+</html>

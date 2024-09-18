@@ -71,7 +71,24 @@ exports.moyasarWebhook = catchAsync(async (req, res, next) => {
     await email.sendEmail(
       order.user.email,
       'Order confirmation',
-      `<h1>Thanks for your purchase</h1>`,
+      `
+      <h1>Hello ${order.user.name},</h1>
+      <p>
+      This is an email to confirm your purchase from PPC.
+      You can check the order details on your account on the website</p>
+      <h4>Thanks for your purchase</h4>
+      <h2>PPC Dev team</h2>
+      `,
+    );
+    const orderDetailsUrl = `${req.protocol}://${req.get('host')}/admin/dashboard/orders/accepted`;
+    await email.sendEmailText(
+      process.env.ADMIN_ORDERS_EMAIL,
+      'Order has been made',
+      `
+      Buckle up! An order has been made!,
+      Check the details here: ${orderDetailsUrl}
+      Order ID: #ORD-${order.orderid}
+      `,
     );
   }
 

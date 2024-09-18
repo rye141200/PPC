@@ -2,8 +2,9 @@ const catchAsync = require('../utils/catchAsync');
 const Product = require('../models/productModel');
 const User = require('../models/userModel');
 const Order = require('../models/orderModel');
+const Category = require('../models/categoryModel');
 const handlerFactory = require('./handlerFactory');
-const productController = require('../controllers/productController');
+const productController = require('./productController');
 
 exports.renderForgotPassword = (req, res, next) => {
   res.status(200).render('forgotPassword', {
@@ -19,6 +20,9 @@ exports.renderHome = catchAsync(async (req, res, next) => {
   const products = await Product.find();
   const totalNumber = products.length;
 
+  if (req.query.category)
+    req.query.category = await Category.findOne({ slug: req.query.category });
+
   const pageItems = await handlerFactory.getAll(
     Product,
     undefined,
@@ -29,7 +33,7 @@ exports.renderHome = catchAsync(async (req, res, next) => {
   if (pageItems.length === 0 || !req.query.page)
     if (+req.query.page !== 1) return res.redirect('/?page=1');
 
-  //console.log(pageItems);
+  // console.log(pageItems);
   res.status(200).render('home', {
     totalNumber,
     pageItems,
@@ -39,6 +43,7 @@ exports.renderHome = catchAsync(async (req, res, next) => {
 
 exports.renderProductDetails = catchAsync(async (req, res, next) => {
   const product = await Product.findOne({ slug: req.params.id });
+
   res.status(200).render('productDetails', {
     product,
     title: `PPC Tech | ${product.name}`,
@@ -109,7 +114,7 @@ exports.renderDashboard = (model, ejsFile) =>
     });
   });
 
-exports.renderSearchResult = catchAsync(async (req, res, next) => {
+exports.renderProductsBysubString = catchAsync(async (req, res, next) => {
   const { products, count } = await productController.searchProducts(
     req.query.name,
     undefined,
@@ -128,3 +133,39 @@ exports.renderSearchResult = catchAsync(async (req, res, next) => {
     title: 'PPC Tech | Search Result',
   });
 });
+
+exports.renderProductsByCategory = catchAsync(async (req, res, next) => {
+  req.query.category = await Category.findOne({ slug: req.query.category });
+
+  const pageItems = await handlerFactory.getAll(
+    Product,
+    undefined,
+    undefined,
+    true,
+  )(req, res, next);
+
+  res.status(200).render('home', {
+    totalNumber: pageItems.length,
+    pageItems,
+    title: 'PPC Tech | Home',
+  });
+});
+
+exports.renderDeleted = (model, ejsFile) =>
+  catchAsync(async (req, res, next) => {
+    const deletedEntities = await model
+      .find({ deleted: true })
+      .setOptions({ bypassFilter: true });
+    const document = await model.find();
+
+    res.status(200).render(ejsFile, {
+      title: 'PPC Tech | Dashboard',
+      user: req.user,
+      deletedEntities,
+      document,
+    });
+  });
+
+exports.renderThanks = (req, res) => {
+  res.status(200).render('thanks');
+};

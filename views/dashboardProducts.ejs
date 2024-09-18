@@ -6,12 +6,14 @@
     <title><%=title%></title>
     <link href="/css/home.css" rel="stylesheet" />
     <link
-      href="https://unpkg.com/flowbite@1.5.0/dist/flowbite.min.css"
-      rel="stylesheet"
+    href="https://unpkg.com/flowbite@1.5.0/dist/flowbite.min.css"
+    rel="stylesheet"
     />
-    <script defer src="/js/login.js" type="module"></script>
+    <!-- <script defer src="/js/login.js" type="module"></script>
     <script defer src="/js/searchBar.js" type="module"></script>
-    <script defer src="/js/productsDashboard.js" type="module"></script>
+    <script defer src="/js/productsDashboard.js" type="module"></script> -->
+    <script defer src="/js/index.js" type="module"></script>
+
   </head>
   <body class="relative min-h-screen bg-[#f9fafb]">
     <%- include('components/_header')%>
@@ -69,32 +71,39 @@
     
       <div class="flex flex-col space-y-2">
         <div class="flex flex-row space-x-2">
-        
-
           <a class="w-1/2 flex justify-center items-center space-x-3 bg-mulledWine py-4 rounded-lg" href="/admin/dashboard/products">
             <button class="flex items-center justify-center flex-shrink-0 w-10 h-10 rounded cursor-pointer">
               <ion-icon name="cube-outline" class="w-6 h-6 text-white"></ion-icon>
             </button>
-            <span class="leading-none text-lg font-bold text-white">Products</span>
+            <span class="leading-none text-sm font-bold text-white">Products</span>
           </a>
           <a class="w-1/2 flex justify-center items-center space-x-3 bg-gray-100 py-4 rounded-lg hover:bg-gray-300" href="/admin/dashboard/orders/accepted">
             <button class="flex items-center justify-center flex-shrink-0 w-10 h-10 rounded cursor-pointer">
               <ion-icon name="receipt-outline" class="w-6 h-6 text-black-500"></ion-icon>
             </button>
-            <span class="leading-none text-lg font-bold">Orders</span>
+            <span class="leading-none text-sm font-bold">Orders</span>
           </a>
-
+          <a class="w-1/2 flex justify-center items-center space-x-3 bg-gray-100 py-4 rounded-lg hover:bg-gray-300" href="/admin/dashboard/categories/">
+            <button class="flex items-center justify-center flex-shrink-0 w-10 h-10 rounded cursor-pointer">
+              <!-- <ion-icon name="receipt-outline" class="w-6 h-6 text-black-500"></ion-icon> -->
+              <ion-icon name="grid-outline" class="w-6 h-6 text-black-500"></ion-icon>
+            </button>
+            <span class="leading-none text-sm font-bold">Categories</span>
+          </a>
         </div>
         
         <div class="flex flex-col md:flex-row md:space-x-2 space-y-2 md:space-y-0">
           <div class="md:w-1/4 flex flex-row md:flex-col overflow-y-auto p-4 bg-gray-100 rounded-lg space-y-0 space-x-2 md:space-y-2 md:space-x-0">
-            <a class="flex items-center flex-shrink-0 h-10 px-3 text-sm font-medium bg-gray-200 rounded hover:bg-gray-300"
-                        href="/admin/dashboard/products">
-                        <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                        </svg>
-                        <span class="ml-2 leading-none">New Product</span>
-                    </a>
+            <a class="flex items-center flex-shrink-0 h-10 px-3 text-sm font-medium bg-gray-200 rounded hover:bg-gray-300" href="/admin/dashboard/products">
+                <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                </svg>
+                <span class="ml-2 leading-none">New Product</span>
+            </a>
+            <a class="btn-animated flex items-center flex-shrink-0 h-10 px-3 text-sm font-medium rounded hover:bg-red-500 hover:text-white" href="/admin/dashboard/products/deleted">
+              <ion-icon name="trash-outline"></ion-icon>
+                <span class="ml-2 leading-none">Deleted products</span>
+            </a>
           <% if(typeof document !== 'undefined' ) { %>
           <% document.forEach(product => { %>
             <% if(typeof selectedDocument !=='undefined' && selectedDocument.name === product.name) {%>

@@ -14,4 +14,19 @@ router
     categoryController.createCategory,
   );
 
+router
+  .route('/restore/:id')
+  .patch(
+    authController.protect,
+    authController.restrictTo('admin'),
+    categoryController.restoreCategory,
+  );
+router
+  .route('/:id')
+  .patch(
+    authController.protect,
+    authController.restrictTo('admin'),
+    categoryController.updateCategory,
+  );
+
 module.exports = router;
